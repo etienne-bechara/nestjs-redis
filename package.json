@@ -61,7 +61,7 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@bechara/nestjs-core": "1.0.3",
+    "@bechara/nestjs-core": "1.0.4",
     "ioredis": "4.19.2"
   },
   "devDependencies": {

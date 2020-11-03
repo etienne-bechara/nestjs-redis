@@ -3,11 +3,12 @@ import { TestingModuleBuilder } from '@nestjs/testing';
 import { v4 } from 'uuid';
 
 import { RedisConfig } from './redis.config';
+import { RedisModule } from './redis.module';
 import { RedisService } from './redis.service';
 
 TestModule.createSandbox({
   name: 'RedisService',
-  providers: [ RedisConfig, RedisService ],
+  imports: [ RedisModule ],
   configs: [ RedisConfig ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
