@@ -1,5 +1,5 @@
 {
-  "name": "@bechara/template-npm-package",
+  "name": "@bechara/nestjs-redis",
   "version": "0.1.0",
   "description": "Template for Creating NPM Packages",
   "author": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/etienne-bechara/template-npm-package"
+    "url": "https://github.com/etienne-bechara/nestjs-redis"
   },
   "license": "MIT",
   "main": "dist/index.js",
@@ -60,11 +60,18 @@
     ]
   },
   "peerDependencies": {},
-  "dependencies": {},
+  "dependencies": {
+    "@bechara/nestjs-core": "1.0.3",
+    "ioredis": "4.19.2"
+  },
   "devDependencies": {
     "@bechara/eslint-config-bechara-ts": "1.0.0",
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
+    "@nestjs/common": "7.5.1",
+    "@nestjs/core": "7.5.1",
+    "@nestjs/platform-express": "7.5.1",
+    "@nestjs/testing": "7.5.1",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/commit-analyzer": "8.0.1",
     "@semantic-release/git": "9.0.0",
