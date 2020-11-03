@@ -1,0 +1,87 @@
+{
+  "name": "@bechara/template-npm-package",
+  "version": "0.1.0",
+  "description": "Template for Creating NPM Packages",
+  "author": {
+    "name": "Etienne Bechara",
+    "email": "bechara.etienne@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etienne-bechara/template-npm-package"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "npm run index && rimraf ./dist && tsc -p tsconfig.build.json && rimraf ./source/index.ts",
+    "index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
+    "lint": "eslint **/*.ts",
+    "lint:fix": "eslint **/*.ts --fix",
+    "test": "jest --verbose --forceExit --passWithNoTests",
+    "test:watch": "jest --verbose --watch",
+    "test:coverage": "jest --coverage --watchAll=false --passWithNoTests",
+    "update:patch": "ncu -u --dep dev,prod -t minor && npm i && npm audit fix",
+    "update:minor": "ncu -u --dep dev,prod -t major && npm i && npm audit fix",
+    "update:major": "ncu -u --dep dev,prod -t latest && npm i && npm audit fix --force"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged --allow-empty"
+    }
+  },
+  "jest": {
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "ts$": "ts-jest"
+    }
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  },
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {
+    "@bechara/eslint-config-bechara-ts": "1.0.0",
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/commit-analyzer": "8.0.1",
+    "@semantic-release/git": "9.0.0",
+    "@semantic-release/github": "7.1.1",
+    "@semantic-release/npm": "7.0.6",
+    "@semantic-release/release-notes-generator": "9.0.1",
+    "@types/jest": "26.0.15",
+    "@types/node": "14.14.6",
+    "barrelsby": "2.2.0",
+    "eslint": "7.12.1",
+    "husky": "4.3.0",
+    "jest": "26.6.2",
+    "lint-staged": "10.5.1",
+    "npm-check-updates": "9.2.3",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.4.3",
+    "ts-node-dev": "1.0.0",
+    "typescript": "4.0.5"
+  }
+}
