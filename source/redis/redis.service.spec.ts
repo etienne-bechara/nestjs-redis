@@ -31,6 +31,14 @@ TestModule.createSandbox({
         expect(storedNumber).toBeNull();
       });
 
+      it('should persist a random number', async () => {
+        expect(await redisService.setKey({
+          key: testKey,
+          value: { rng },
+        }))
+          .toBeUndefined();
+      });
+
       it('should obey skip if exist rule', async () => {
         await redisService.setKey({
           key: testKey,
@@ -39,14 +47,6 @@ TestModule.createSandbox({
         });
         const storedNumber = await redisService.getKey(testKey);
         expect(storedNumber).toMatchObject({ rng });
-      });
-
-      it('should persist a random number', async () => {
-        expect(await redisService.setKey({
-          key: testKey,
-          value: { rng },
-        }))
-          .toBeUndefined();
       });
     });
 
