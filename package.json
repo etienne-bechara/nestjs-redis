@@ -1,6 +1,6 @@
 {
   "name": "@bechara/nestjs-redis",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Template for Creating NPM Packages",
   "author": {
     "name": "Etienne Bechara",
