@@ -59,9 +59,10 @@
       "@semantic-release/github"
     ]
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@bechara/nestjs-core": "^1.0.0"
+  },
   "dependencies": {
-    "@bechara/nestjs-core": "1.0.4",
     "ioredis": "4.19.2"
   },
   "devDependencies": {
