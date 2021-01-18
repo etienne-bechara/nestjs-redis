@@ -11,7 +11,7 @@ export class RedisConfig {
   public readonly REDIS_HOST: string;
 
   @InjectSecret()
-  @Transform((v) => Number.parseInt(v))
+  @Transform((v) => Number.parseInt(v.value))
   @IsNumber()
   public readonly REDIS_PORT: number;
 
