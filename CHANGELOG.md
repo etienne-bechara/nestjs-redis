@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.0...v1.1.1) (2021-03-27)
+
+
+### Bug Fixes
+
+* add built-in injectable config (optional) ([1d80afd](https://github.com/etienne-bechara/nestjs-redis/commit/1d80afd02754499898e562d70fb06725947fdbf8))
+
 # [1.1.0](https://github.com/etienne-bechara/nestjs-redis/compare/v1.0.3...v1.1.0) (2021-03-27)
 
 
