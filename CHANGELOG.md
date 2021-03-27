@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/etienne-bechara/nestjs-redis/compare/v1.0.2...v1.0.3) (2021-01-18)
+
+
+### Bug Fixes
+
+* add missing dev dependency ([b650ee1](https://github.com/etienne-bechara/nestjs-redis/commit/b650ee1013fc1c4ed2168878d38840af44299d0c))
+* update dependencies ([4b1c955](https://github.com/etienne-bechara/nestjs-redis/commit/4b1c955e1557512220cda0ad79f30c1403312f51))
+
 ## [1.0.2](https://github.com/etienne-bechara/nestjs-redis/compare/v1.0.1...v1.0.2) (2020-11-07)
 
 
