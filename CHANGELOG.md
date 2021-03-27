@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.1...v1.1.2) (2021-03-27)
+
+
+### Bug Fixes
+
+* add missing uuid dep ([08c8e0d](https://github.com/etienne-bechara/nestjs-redis/commit/08c8e0deec772941e2bf129803081bd4fd8e80a1))
+
 ## [1.1.1](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.0...v1.1.1) (2021-03-27)
 
 
