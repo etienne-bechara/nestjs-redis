@@ -67,7 +67,8 @@
     "@bechara/nestjs-core": "^2.0.0"
   },
   "dependencies": {
-    "ioredis": "4.24.4"
+    "ioredis": "4.24.4",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "@bechara/eslint-config-bechara-ts": "1.0.1",
