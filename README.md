@@ -22,70 +22,43 @@ npm i @bechara/nestjs-redis
 ```
 REDIS_HOST='localhost'
 REDIS_PORT=16420
-REDIS_PASSWORD='xxx'
+REDIS_USERNAME='redis'
+REDIS_PASSWORD='*****'
 ```
 
 It is recommended that you have a local database in order to test connectivity.
 
 
-3\. Create a new folder at your `source` to be responsible for handling the connection configuration. For this example we shall name it `cache`.
-
-
-4\. Create environment injection file at `cache.config.ts`, you may copy the template below in order to have built-in validation:
+3\. Import `RedisModule` and `RedisConfig` into you boot script and configure asynchronously:
 
 ```ts
-import { InjectSecret } from '@bechara/nestjs-core';
-import { Injectable } from '@nestjs/common';
-import { Transform } from 'class-transformer';
-import { IsNumber, IsString, IsUrl } from 'class-validator';
-
-@Injectable()
-export class CacheConfig {
-
-  @InjectSecret()
-  @IsUrl()
-  public readonly REDIS_HOST: string;
-
-  @InjectSecret()
-  @Transform((v) => Number.parseInt(v.value))
-  @IsNumber()
-  public readonly REDIS_PORT: number;
-
-  @InjectSecret()
-  @IsString()
-  public readonly REDIS_PASSWORD: string;
-
-}
-```
-
-5\. Create the connection module wrapper at `cache.module.ts`:
-
-```ts
+import { AppModule } from '@bechara/nestjs-core';
+import { RedisConfig } from '@bechara/nestjs-redis';
 import { RedisModule } from '@bechara/nestjs-redis';
-import { Module } from '@nestjs/common';
 
-import { CacheConfig } from './cache.config';
-
-@Module({
+void AppModule.bootServer({
+  configs: [ RedisConfig ],
   imports: [
     RedisModule.registerAsync({
-      inject: [ CacheConfig ],
-      useFactory: (cacheConfig: CacheConfig) => ({
-        host: cacheConfig.REDIS_HOST,
-        port: cacheConfig.REDIS_PORT,
-        password: cacheConfig.REDIS_PASSWORD,
+      inject: [ RedisConfig ],
+      useFactory: (redisConfig: RedisConfig) => ({
+        host: redisConfig.REDIS_HOST,
+        port: redisConfig.REDIS_PORT,
+        username: redisConfig.REDIS_USERNAME,
+        password: redisConfig.REDIS_PASSWORD,
         keepAlive: 1 * 1000,
-        // You may add several other options, check with Ctrl+Space
+        // Check more options with Ctrl+Space
       }),
     }),
   ],
-  providers: [ CacheConfig ],
-  exports: [ CacheConfig ],
-})
-export class CacheModule { }
+  exports: [ RedisModule ],
+});
 ```
 
-6\. Boot your application and you should see a successful connection message:
+If you wish to change how environment variables are injected you may provide your own configuration instead of using the built-in `RedisConfig`.
+
+
+4\. Boot your application and you should see a successful connection message:
 
 ```
 2021-03-27 00:02:54  NTC  [RedisService] Client connected at localhost
@@ -94,7 +67,7 @@ export class CacheModule { }
 
 ## Usage
 
-Simply inject the `RedisService` at your desired provider and you shall be able to use one of the built-in methods:
+Import `RedisModule` into the domain you with to use it followed by injecting the `RedisService` at your desired provider and you shall be able to use one of the built-in methods:
 
 ```
 getKey<T>(key: string): Promise<T>;

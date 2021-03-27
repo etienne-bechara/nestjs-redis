@@ -1,13 +1,25 @@
 import { AppModule } from '@bechara/nestjs-core';
 
-import { CacheConfig } from './cache/cache.config';
-import { CacheModule } from './cache/cache.module';
+import { RedisConfig } from '../redis/redis.config';
+import { RedisModule } from '../redis/redis.module';
 
 /**
  * Fully boots all modules for testing purposes.
  */
 void AppModule.bootServer({
   disableModuleScan: true,
-  modules: [ CacheModule ],
-  configs: [ CacheConfig ],
+  configs: [ RedisConfig ],
+  imports: [
+    RedisModule.registerAsync({
+      inject: [ RedisConfig ],
+      useFactory: (redisConfig: RedisConfig) => ({
+        host: redisConfig.REDIS_HOST,
+        port: redisConfig.REDIS_PORT,
+        username: redisConfig.REDIS_USERNAME,
+        password: redisConfig.REDIS_PASSWORD,
+        keepAlive: 1 * 1000,
+      }),
+    }),
+  ],
+  exports: [ RedisModule ],
 });

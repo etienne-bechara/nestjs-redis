@@ -3,7 +3,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
-import { RedisConfig } from './redis.config';
 import { RedisInjectionToken } from './redis.enum';
 import { RedisModuleOptions, RedisSetParams } from './redis.interface';
 
@@ -15,7 +14,6 @@ export class RedisService {
   public constructor(
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
     private readonly redisModuleOptions: RedisModuleOptions,
-    private readonly redisConfig: RedisConfig,
     private readonly loggerService: LoggerService,
   ) {
     if (!this.redisModuleOptions) this.redisModuleOptions = { };
@@ -111,6 +109,8 @@ export class RedisService {
    * @param duration
    */
   public async lockKey(key: string, duration?: number): Promise<void> {
+    const defaultLockDuration = 5000;
+    const lockRetryHalt = 500;
     const lockValue = v4();
 
     this.loggerService.debug(`[RedisService] Attempting to lock key ${key}...`);
@@ -118,12 +118,12 @@ export class RedisService {
       key,
       value: lockValue,
       skip: 'IF_EXIST',
-      duration: duration || this.redisConfig.REDIS_DEFAULT_LOCK_DURATION,
+      duration: duration || defaultLockDuration,
     });
 
     if (currentValue !== lockValue) {
       this.loggerService.debug(`[RedisService] Locking key ${key} failed, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, this.redisConfig.REDIS_DEFAULT_LOCK_RETRY));
+      await new Promise((resolve) => setTimeout(resolve, lockRetryHalt));
       return this.lockKey(key, duration);
     }
 

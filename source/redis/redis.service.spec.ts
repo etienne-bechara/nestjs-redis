@@ -1,54 +1,26 @@
-import { InjectSecret } from '@bechara/nestjs-core';
 import { TestModule } from '@bechara/nestjs-core/dist/test';
-import { Global, Injectable, Module } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
-import { Transform } from 'class-transformer';
-import { IsNumber, IsString, IsUrl } from 'class-validator';
 import { v4 } from 'uuid';
 
+import { RedisConfig } from './redis.config';
 import { RedisModule } from './redis.module';
 import { RedisService } from './redis.service';
 
-@Injectable()
-class RedisTestConfig {
-
-  @InjectSecret()
-  @IsUrl()
-  public readonly REDIS_HOST: string;
-
-  @InjectSecret()
-  @Transform((v) => Number.parseInt(v.value))
-  @IsNumber()
-  public readonly REDIS_PORT: number;
-
-  @InjectSecret()
-  @IsString()
-  public readonly REDIS_PASSWORD: string;
-
-}
-
-@Global()
-@Module({
+TestModule.createSandbox({
+  name: 'RedisService',
   imports: [
     RedisModule.registerAsync({
-      inject: [ RedisTestConfig ],
-      useFactory: (redisTestConfig: RedisTestConfig) => ({
-        host: redisTestConfig.REDIS_HOST,
-        port: redisTestConfig.REDIS_PORT,
-        password: redisTestConfig.REDIS_PASSWORD,
+      inject: [ RedisConfig ],
+      useFactory: (redisConfig: RedisConfig) => ({
+        host: redisConfig.REDIS_HOST,
+        port: redisConfig.REDIS_PORT,
+        username: redisConfig.REDIS_USERNAME,
+        password: redisConfig.REDIS_PASSWORD,
         keepAlive: 1 * 1000,
       }),
     }),
   ],
-  providers: [ RedisTestConfig ],
-  exports: [ RedisTestConfig ],
-})
-class RedisTestModule { }
-
-TestModule.createSandbox({
-  name: 'RedisService',
-  imports: [ RedisTestModule ],
-  configs: [ RedisTestConfig ],
+  configs: [ RedisConfig ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
     const testKey = v4();
