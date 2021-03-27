@@ -1,30 +1,12 @@
-import { InjectSecret } from '@bechara/nestjs-core';
 import { Injectable } from '@nestjs/common';
-import { Transform } from 'class-transformer';
-import { IsNumber, IsString, IsUrl } from 'class-validator';
 
 @Injectable()
 export class RedisConfig {
 
-  @InjectSecret()
-  @IsUrl()
-  public readonly REDIS_HOST: string;
+  // 5 seconds
+  public readonly REDIS_DEFAULT_LOCK_DURATION = 5 * 1000;
 
-  @InjectSecret()
-  @Transform((v) => Number.parseInt(v.value))
-  @IsNumber()
-  public readonly REDIS_PORT: number;
-
-  @InjectSecret()
-  @IsString()
-  public readonly REDIS_PASSWORD: string;
-
-  @InjectSecret({ default: '' })
-  @IsString()
-  public readonly REDIS_KEY_PREFIX: string;
-
-  @InjectSecret({ default: 5000 })
-  @IsNumber()
-  public readonly REDIS_LOCK_DEFAULT_DURATION: number;
+  // 0.5 seconds
+  public readonly REDIS_DEFAULT_LOCK_RETRY = 500;
 
 }

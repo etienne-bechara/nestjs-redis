@@ -1,10 +1,11 @@
-import { LoggerService, UtilService } from '@bechara/nestjs-core';
-import { Injectable } from '@nestjs/common';
+import { LoggerService } from '@bechara/nestjs-core';
+import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
 import { RedisConfig } from './redis.config';
-import { RedisSetParams } from './redis.interface';
+import { RedisInjectionToken } from './redis.enum';
+import { RedisModuleOptions, RedisSetParams } from './redis.interface';
 
 @Injectable()
 export class RedisService {
@@ -12,32 +13,37 @@ export class RedisService {
   private redisClient: Redis.Redis;
 
   public constructor(
+    @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
+    private readonly redisModuleOptions: RedisModuleOptions,
     private readonly redisConfig: RedisConfig,
     private readonly loggerService: LoggerService,
-    private readonly utilService: UtilService,
   ) {
+    if (!this.redisModuleOptions) this.redisModuleOptions = { };
     this.setupRedis();
   }
 
   /**
-   * Sets up the redis cloud client, in case of ECONNRESET
-   * errors attempt to reconnect up to 5 times with a delay
-   * of 100ms. On failure throws regular exception.
+   * Sets up the redis cloud client, if reconnect procedure
+   * is not provided use the default below.
    */
   private setupRedis(): void {
-    const redisHost = this.redisConfig.REDIS_HOST;
-    this.redisClient = new Redis({
-      host: redisHost,
-      port: this.redisConfig.REDIS_PORT,
-      password: this.redisConfig.REDIS_PASSWORD,
-      keyPrefix: this.redisConfig.REDIS_KEY_PREFIX,
-      reconnectOnError: (err: Error): boolean | 1 | 2 => {
-        this.loggerService.error(err);
+    if (!this.redisModuleOptions.reconnectOnError) {
+      this.redisModuleOptions.reconnectOnError = (err: Error): boolean | 1 | 2 => {
+        this.loggerService.error(`[RedisService] ${err.message}`, err);
         return 2;
-      },
-    });
+      };
+    }
 
-    this.loggerService.notice(`Redis client connected at ${redisHost}`);
+    const redisHost = this.redisModuleOptions.host;
+    this.redisClient = new Redis(this.redisModuleOptions);
+    this.loggerService.notice(`[RedisService] Client connected at ${redisHost}`);
+  }
+
+  /**
+   * Returns the underlying client.
+   */
+  public getClient(): Redis.Redis {
+    return this.redisClient;
   }
 
   /**
@@ -45,7 +51,7 @@ export class RedisService {
    * @param key
    */
   public async getKey<T>(key: string): Promise<T> {
-    this.loggerService.debug(`Redis: Reading key ${key}...`);
+    this.loggerService.debug(`[RedisService] Reading key ${key}...`);
 
     const stringValue = await this.redisClient.get(key);
     return JSON.parse(stringValue);
@@ -70,7 +76,7 @@ export class RedisService {
       extraParams.push(params.duration);
     }
 
-    this.loggerService.debug(`Redis: Setting key ${params.key}...`);
+    this.loggerService.debug(`[RedisService] Setting key ${params.key}...`);
 
     await this.redisClient.set(
       params.key,
@@ -107,21 +113,21 @@ export class RedisService {
   public async lockKey(key: string, duration?: number): Promise<void> {
     const lockValue = v4();
 
-    this.loggerService.debug(`Redis: Attempting to lock key ${key}...`);
+    this.loggerService.debug(`[RedisService] Attempting to lock key ${key}...`);
     const currentValue = await this.setGetKey({
       key,
       value: lockValue,
       skip: 'IF_EXIST',
-      duration: duration || this.redisConfig.REDIS_LOCK_DEFAULT_DURATION,
+      duration: duration || this.redisConfig.REDIS_DEFAULT_LOCK_DURATION,
     });
 
     if (currentValue !== lockValue) {
-      this.loggerService.debug(`Redis: Locking key ${key} failed, retrying...`);
-      await this.utilService.halt(500);
+      this.loggerService.debug(`[RedisService] Locking key ${key} failed, retrying...`);
+      await new Promise((resolve) => setTimeout(resolve, this.redisConfig.REDIS_DEFAULT_LOCK_RETRY));
       return this.lockKey(key, duration);
     }
 
-    this.loggerService.debug(`Redis: Key ${key} locked successfully!`);
+    this.loggerService.debug(`[RedisService] Key ${key} locked successfully!`);
   }
 
 }
