@@ -28,10 +28,10 @@ REDIS_PASSWORD='xxx'
 It is recommended that you have a local database in order to test connectivity.
 
 
-3\. Create a new folder at your `source` to be responsible for handling the connection configuration. For this example we shall name it `database`.
+3\. Create a new folder at your `source` to be responsible for handling the connection configuration. For this example we shall name it `cache`.
 
 
-4\. Create environment injection file at `database.config.ts`, you may copy the template below in order to have built-in validation:
+4\. Create environment injection file at `cache.config.ts`, you may copy the template below in order to have built-in validation:
 
 ```ts
 import { InjectSecret } from '@bechara/nestjs-core';
@@ -40,7 +40,7 @@ import { Transform } from 'class-transformer';
 import { IsNumber, IsString, IsUrl } from 'class-validator';
 
 @Injectable()
-export class DatabaseConfig {
+export class CacheConfig {
 
   @InjectSecret()
   @IsUrl()
@@ -58,31 +58,31 @@ export class DatabaseConfig {
 }
 ```
 
-5\. Create the connection module wrapper at `database.module.ts`:
+5\. Create the connection module wrapper at `cache.module.ts`:
 
 ```ts
 import { RedisModule } from '@bechara/nestjs-redis';
 import { Module } from '@nestjs/common';
 
-import { DatabaseConfig } from './database.config';
+import { CacheConfig } from './cache.config';
 
 @Module({
   imports: [
     RedisModule.registerAsync({
-      inject: [ DatabaseConfig ],
-      useFactory: (databaseConfig: DatabaseConfig) => ({
-        host: databaseConfig.REDIS_HOST,
-        port: databaseConfig.REDIS_PORT,
-        password: databaseConfig.REDIS_PASSWORD,
+      inject: [ CacheConfig ],
+      useFactory: (cacheConfig: CacheConfig) => ({
+        host: cacheConfig.REDIS_HOST,
+        port: cacheConfig.REDIS_PORT,
+        password: cacheConfig.REDIS_PASSWORD,
         keepAlive: 1 * 1000,
         // You may add several other options, check with Ctrl+Space
       }),
     }),
   ],
-  providers: [ DatabaseConfig ],
-  exports: [ DatabaseConfig ],
+  providers: [ CacheConfig ],
+  exports: [ CacheConfig ],
 })
-export class DatabaseModule { }
+export class CacheModule { }
 ```
 
 6\. Boot your application and you should see a successful connection message:

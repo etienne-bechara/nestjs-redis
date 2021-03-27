@@ -9,7 +9,6 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   REDIS_HOST: ${{ secrets.REDIS_HOST }}
   REDIS_PORT: ${{ secrets.REDIS_PORT }}
-  REDIS_DATABASE: ${{ secrets.REDIS_DATABASE }}
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
 
 jobs:

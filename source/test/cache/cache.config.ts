@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer';
 import { IsNumber, IsString, IsUrl } from 'class-validator';
 
 @Injectable()
-export class DatabaseConfig {
+export class CacheConfig {
 
   @InjectSecret()
   @IsUrl()
