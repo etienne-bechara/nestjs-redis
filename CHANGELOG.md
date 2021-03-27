@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/etienne-bechara/nestjs-redis/compare/v1.0.3...v1.1.0) (2021-03-27)
+
+
+### Features
+
+* improve nestjs integration and add examples ([959ed8c](https://github.com/etienne-bechara/nestjs-redis/commit/959ed8c25af9447de204d82f5b0a88ddd0004e7e))
+
 ## [1.0.3](https://github.com/etienne-bechara/nestjs-redis/compare/v1.0.2...v1.0.3) (2021-01-18)
 
 
