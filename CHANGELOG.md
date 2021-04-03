@@ -1,3 +1,11 @@
+## [1.1.3](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.2...v1.1.3) (2021-04-03)
+
+
+### Bug Fixes
+
+* add ncp dev dep ([eb8462d](https://github.com/etienne-bechara/nestjs-redis/commit/eb8462d4c725eb51930d5c155d84a9f582dbee48))
+* replace npm with pnpm ([9ddf753](https://github.com/etienne-bechara/nestjs-redis/commit/9ddf7538f91e48d1a6b1e34d2df950d83b3b99f8))
+
 ## [1.1.2](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.1...v1.1.2) (2021-03-27)
 
 
