@@ -19,6 +19,7 @@ devDependencies:
   husky: 6.0.0
   jest: 26.6.3_ts-node@9.1.1
   lint-staged: 10.5.4
+  ncp: 2.0.0
   nodemon: 2.0.7
   rimraf: 3.0.2
   semantic-release: 17.4.2
@@ -6134,6 +6135,11 @@ packages:
     dev: true
     resolution:
       integrity: sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+  /ncp/2.0.0:
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha1-GVoh1sRuNh0vsSgbo4uR6d9727M=
   /negotiator/0.6.2:
     dev: true
     engines:
@@ -8805,6 +8811,7 @@ specifiers:
   ioredis: 4.25.0
   jest: 26.6.3
   lint-staged: 10.5.4
+  ncp: 2.0.0
   nodemon: 2.0.7
   rimraf: 3.0.2
   semantic-release: 17.4.2
