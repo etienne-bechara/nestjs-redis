@@ -1,5 +1,4 @@
-import { LoggerService } from '@bechara/nestjs-core';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@bechara/nestjs-core';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 

@@ -1,4 +1,4 @@
-import { ModuleMetadata } from '@nestjs/common';
+import { ModuleMetadata } from '@bechara/nestjs-core';
 import { RedisOptions } from 'ioredis';
 
 export interface RedisAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
