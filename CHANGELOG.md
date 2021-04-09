@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.3...v1.1.4) (2021-04-09)
+
+
+### Bug Fixes
+
+* sync core version ([84f5416](https://github.com/etienne-bechara/nestjs-redis/commit/84f54162ba02165006bf0c448f0a7c9c80778ac5))
+
 ## [1.1.3](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.2...v1.1.3) (2021-04-03)
 
 
