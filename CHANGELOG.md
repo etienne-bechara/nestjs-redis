@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.4...v2.0.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* sync major ver with core ([6740eb2](https://github.com/etienne-bechara/nestjs-redis/commit/6740eb270bf5fcb6910b301c68fcc2f2429b0d44))
+
+
+### BREAKING CHANGES
+
+* sync major ver with core
+
 ## [1.1.4](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.3...v1.1.4) (2021-04-09)
 
 
