@@ -15,7 +15,6 @@ export class RedisService {
     private readonly redisModuleOptions: RedisModuleOptions,
     private readonly loggerService: LoggerService,
   ) {
-    if (!this.redisModuleOptions) this.redisModuleOptions = { };
     this.setupRedis();
   }
 
@@ -24,6 +23,11 @@ export class RedisService {
    * is not provided use the default below.
    */
   private setupRedis(): void {
+    if (!this.redisModuleOptions?.host) {
+      this.loggerService.warning('[RedisService] Client connection disabled due to missing host');
+      return;
+    }
+
     if (!this.redisModuleOptions.reconnectOnError) {
       this.redisModuleOptions.reconnectOnError = (err: Error): boolean | 1 | 2 => {
         this.loggerService.error(`[RedisService] ${err.message}`, err);
