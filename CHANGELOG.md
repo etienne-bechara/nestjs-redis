@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.0...v2.0.1) (2021-04-14)
+
+
+### Bug Fixes
+
+* allow missing variables and do not connect to host ([dfd5579](https://github.com/etienne-bechara/nestjs-redis/commit/dfd55794e64689a7d2a9bda3222d2821cf70ce09))
+
 # [2.0.0](https://github.com/etienne-bechara/nestjs-redis/compare/v1.1.4...v2.0.0) (2021-04-09)
 
 
