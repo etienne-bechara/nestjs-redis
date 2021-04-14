@@ -1,6 +1,5 @@
 import { Injectable, InjectSecret } from '@bechara/nestjs-core';
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, IsUrl } from 'class-validator';
 
 @Injectable()
 export class RedisConfig {
@@ -12,8 +11,7 @@ export class RedisConfig {
 
   @IsOptional()
   @InjectSecret()
-  @Transform((v) => Number.parseInt(v.value))
-  @IsNumber()
+  @IsNumberString()
   public readonly REDIS_PORT: number;
 
   @IsOptional()
