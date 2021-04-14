@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.1...v2.0.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* port variable validation ([b738395](https://github.com/etienne-bechara/nestjs-redis/commit/b738395aea387ed23c762cf11ffb30a752255947))
+
 ## [2.0.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.0...v2.0.1) (2021-04-14)
 
 
