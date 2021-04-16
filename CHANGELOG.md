@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.2...v2.1.0) (2021-04-16)
+
+
+### Features
+
+* add unlock key and do not change original value ([3fce656](https://github.com/etienne-bechara/nestjs-redis/commit/3fce65640e6d1ea5b1e1716ed69e182224314701))
+
 ## [2.0.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.1...v2.0.2) (2021-04-14)
 
 
