@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.0...v2.1.1) (2021-04-16)
+
+
+### Bug Fixes
+
+* add isInitialized() method ([bbec6dc](https://github.com/etienne-bechara/nestjs-redis/commit/bbec6dc35078716feccea8bfe758a9ec00841b7c))
+
 # [2.1.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.0.2...v2.1.0) (2021-04-16)
 
 
