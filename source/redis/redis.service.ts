@@ -8,14 +8,22 @@ import { RedisModuleOptions, RedisSetOptions } from './redis.interface';
 @Injectable()
 export class RedisService {
 
-  private defaultTtl = 60 * 1000;
   private redisClient: Redis.Redis;
+  private initialized: boolean;
+  private defaultTtl = 60 * 1000;
 
   public constructor(
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
     private readonly redisModuleOptions: RedisModuleOptions,
     private readonly loggerService: LoggerService,
   ) {
+    this.redisModuleOptions ??= { };
+
+    if (!this.redisModuleOptions?.host) {
+      this.loggerService.warning('[RedisService] Client connection disabled due to missing host');
+      return;
+    }
+
     this.setupRedis();
   }
 
@@ -24,11 +32,6 @@ export class RedisService {
    * is not provided use the default below.
    */
   private setupRedis(): void {
-    if (!this.redisModuleOptions?.host) {
-      this.loggerService.warning('[RedisService] Client connection disabled due to missing host');
-      return;
-    }
-
     if (!this.redisModuleOptions.reconnectOnError) {
       this.redisModuleOptions.reconnectOnError = (err: Error): boolean | 1 | 2 => {
         this.loggerService.error(`[RedisService] ${err.message}`, err);
@@ -38,14 +41,22 @@ export class RedisService {
 
     const redisHost = this.redisModuleOptions.host;
     this.redisClient = new Redis(this.redisModuleOptions);
+    this.initialized = true;
     this.loggerService.notice(`[RedisService] Client connected at ${redisHost}`);
+  }
+
+  /**
+   * Returns whether or not the client has been initialized.
+   */
+  public isInitialized(): boolean {
+    return this.initialized;
   }
 
   /**
    * Returns the underlying client.
    */
   public getClient(): Redis.Redis {
-    if (!this.redisClient) {
+    if (!this.initialized) {
       throw new InternalServerErrorException('[RedisService] Redis client unavailable');
     }
 
