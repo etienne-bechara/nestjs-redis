@@ -1,13 +1,14 @@
-import { Inject, Injectable, LoggerService } from '@bechara/nestjs-core';
+import { Inject, Injectable, InternalServerErrorException, LoggerService } from '@bechara/nestjs-core';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
 import { RedisInjectionToken } from './redis.enum';
-import { RedisModuleOptions, RedisSetParams } from './redis.interface';
+import { RedisModuleOptions, RedisSetOptions } from './redis.interface';
 
 @Injectable()
 export class RedisService {
 
+  private defaultTtl = 60 * 1000;
   private redisClient: Redis.Redis;
 
   public constructor(
@@ -44,6 +45,10 @@ export class RedisService {
    * Returns the underlying client.
    */
   public getClient(): Redis.Redis {
+    if (!this.redisClient) {
+      throw new InternalServerErrorException('[RedisService] Redis client unavailable');
+    }
+
     return this.redisClient;
   }
 
@@ -54,36 +59,35 @@ export class RedisService {
   public async getKey<T>(key: string): Promise<T> {
     this.loggerService.debug(`[RedisService] Reading key ${key}...`);
 
-    const stringValue = await this.redisClient.get(key);
+    const stringValue = await this.getClient().get(key);
     return JSON.parse(stringValue);
   }
 
   /**
    * When setting a key always stringify it to preserve
    * type information.
-   * @param params
+   * @param key
+   * @param value
+   * @param options
    */
-  public async setKey(params: RedisSetParams): Promise<void> {
+  public async setKey(key: string, value: any, options: RedisSetOptions = { }): Promise<void> {
+    this.loggerService.debug(`[RedisService] Setting key ${key}...`);
+
+    options.ttl ??= this.defaultTtl;
     const extraParams = [ ];
 
-    if (params.skip === 'IF_EXIST') extraParams.push('NX');
-    if (params.skip === 'IF_NOT_EXIST') extraParams.push('XX');
+    if (options.skip === 'IF_EXIST') extraParams.push('NX');
+    if (options.skip === 'IF_NOT_EXIST') extraParams.push('XX');
 
-    if (params.keepTtl) {
+    if (options.keepTtl) {
       extraParams.push('KEEPTTL');
     }
-    else if (params.duration) {
+    else if (options.ttl) {
       extraParams.push('PX');
-      extraParams.push(params.duration);
+      extraParams.push(options.ttl);
     }
 
-    this.loggerService.debug(`[RedisService] Setting key ${params.key}...`);
-
-    await this.redisClient.set(
-      params.key,
-      JSON.stringify(params.value),
-      ...extraParams,
-    );
+    await this.getClient().set(key, JSON.stringify(value), ...extraParams);
   }
 
   /**
@@ -91,46 +95,54 @@ export class RedisService {
    * @param key
    */
   public async delKey(key: string): Promise<void> {
-    await this.redisClient.del(key);
+    await this.getClient().del(key);
   }
 
   /**
    * Sets a key given desired configuration and returns
    * its current value after the update.
-   * @param params
+   * @param key
+   * @param value
+   * @param options
    */
-  public async setGetKey<T>(params: RedisSetParams): Promise<T> {
-    await this.setKey(params);
-    return this.getKey(params.key);
+  public async setGetKey<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
+    await this.setKey(key, value, options);
+    return this.getKey(key);
   }
 
   /**
-   * Ensures that desired key is not in use before resolving.
-   * Used to guarantee that multiple routines do not access
-   * the same resource concurrently.
+   * Attempt to acquire the lock of a key which might
+   * be being used by other concurrent processes.
+   * Uses a pseudo key ended with _LOCK to ensure
+   * original value is not modified.
    * @param key
-   * @param duration
+   * @param ttl
    */
-  public async lockKey(key: string, duration?: number): Promise<void> {
-    const defaultLockDuration = 5000;
-    const lockRetryHalt = 500;
-    const lockValue = v4();
+  public async lockKey(key: string, ttl: number = this.defaultTtl): Promise<void> {
+    this.loggerService.debug(`[RedisService] Locking key ${key}...`);
 
-    this.loggerService.debug(`[RedisService] Attempting to lock key ${key}...`);
-    const currentValue = await this.setGetKey({
-      key,
-      value: lockValue,
-      skip: 'IF_EXIST',
-      duration: duration || defaultLockDuration,
-    });
+    const lockKey = `${key}_LOCK`;
+    const lockValue = v4();
+    const lockHalt = 500;
+
+    const currentValue = await this.setGetKey(lockKey, lockValue, { ttl, skip: 'IF_EXIST' });
 
     if (currentValue !== lockValue) {
       this.loggerService.debug(`[RedisService] Locking key ${key} failed, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, lockRetryHalt));
-      return this.lockKey(key, duration);
+      await new Promise((resolve) => setTimeout(resolve, lockHalt));
+      return this.lockKey(key, ttl);
     }
 
     this.loggerService.debug(`[RedisService] Key ${key} locked successfully!`);
+  }
+
+  /**
+   * Removes the pseudo key used by lock.
+   * @param key
+   * @returns
+   */
+  public async unlockKey(key: string): Promise<void> {
+    return this.delKey(`${key}_LOCK`);
   }
 
 }

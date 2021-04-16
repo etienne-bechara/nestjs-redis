@@ -74,7 +74,7 @@ getKey<T>(key: string): Promise<T>;
 setKey(params: RedisSetParams): Promise<void>;
 delKey(key: string): Promise<void>;
 setGetKey<T>(params: RedisSetParams): Promise<T>;
-lockKey(key: string, duration?: number): Promise<void>;
+lockKey(key: string, ttl?: number): Promise<void>;
 ```
 
 For complex operation you may acquire the underlying client directly:

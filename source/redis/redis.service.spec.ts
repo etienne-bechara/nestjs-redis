@@ -34,29 +34,17 @@ TestModule.createSandbox({
 
     describe('setKey', () => {
       it('should obey skip if not exist rule', async () => {
-        await redisService.setKey({
-          key: testKey,
-          value: { rng },
-          skip: 'IF_NOT_EXIST',
-        });
+        await redisService.setKey(testKey, { rng }, { skip: 'IF_NOT_EXIST' });
         const storedNumber = await redisService.getKey(testKey);
         expect(storedNumber).toBeNull();
       });
 
       it('should persist a random number', async () => {
-        expect(await redisService.setKey({
-          key: testKey,
-          value: { rng },
-        }))
-          .toBeUndefined();
+        expect(await redisService.setKey(testKey, { rng })).toBeUndefined();
       });
 
       it('should obey skip if exist rule', async () => {
-        await redisService.setKey({
-          key: testKey,
-          value: Math.random(),
-          skip: 'IF_EXIST',
-        });
+        await redisService.setKey(testKey, Math.random(), { skip: 'IF_EXIST' });
         const storedNumber = await redisService.getKey(testKey);
         expect(storedNumber).toMatchObject({ rng });
       });
@@ -81,20 +69,33 @@ TestModule.createSandbox({
       it('should disallow locking the same key at the same time', async () => {
         const lockKey = v4();
         const start = new Date().getTime();
-        const duration = 500;
+        const ttl = 500;
         const instances = 5;
         const lockPromises = [ ];
 
         for (let i = 0; i < instances; i++) {
           lockPromises.push(
-            redisService.lockKey(lockKey, duration),
+            redisService.lockKey(lockKey, ttl),
           );
         }
 
         await Promise.all(lockPromises);
 
         const elapsed = new Date().getTime() - start;
-        expect(elapsed).toBeGreaterThan(duration * (instances - 1));
+        expect(elapsed).toBeGreaterThan(ttl * (instances - 1));
+      });
+
+      it('should allow locking the same key if it has been unlocked', async () => {
+        const lockKey = v4();
+        const start = new Date().getTime();
+        const ttl = 5000;
+
+        await redisService.lockKey(lockKey);
+        await redisService.unlockKey(lockKey);
+        await redisService.lockKey(lockKey);
+
+        const elapsed = new Date().getTime() - start;
+        expect(elapsed).toBeLessThan(ttl);
       });
     });
   },
