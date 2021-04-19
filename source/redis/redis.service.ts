@@ -94,8 +94,7 @@ export class RedisService {
       extraParams.push('KEEPTTL');
     }
     else if (options.ttl) {
-      extraParams.push('PX');
-      extraParams.push(options.ttl);
+      extraParams.push('PX', options.ttl);
     }
 
     await this.getClient().set(key, JSON.stringify(value), ...extraParams);

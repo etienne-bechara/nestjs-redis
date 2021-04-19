@@ -68,7 +68,7 @@ TestModule.createSandbox({
     describe('lockKey', () => {
       it('should disallow locking the same key at the same time', async () => {
         const lockKey = v4();
-        const start = new Date().getTime();
+        const start = Date.now();
         const ttl = 500;
         const instances = 5;
         const lockPromises = [ ];
@@ -81,20 +81,20 @@ TestModule.createSandbox({
 
         await Promise.all(lockPromises);
 
-        const elapsed = new Date().getTime() - start;
+        const elapsed = Date.now() - start;
         expect(elapsed).toBeGreaterThan(ttl * (instances - 1));
       });
 
       it('should allow locking the same key if it has been unlocked', async () => {
         const lockKey = v4();
-        const start = new Date().getTime();
+        const start = Date.now();
         const ttl = 5000;
 
         await redisService.lockKey(lockKey);
         await redisService.unlockKey(lockKey);
         await redisService.lockKey(lockKey);
 
-        const elapsed = new Date().getTime() - start;
+        const elapsed = Date.now() - start;
         expect(elapsed).toBeLessThan(ttl);
       });
     });

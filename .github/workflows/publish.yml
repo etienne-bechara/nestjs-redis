@@ -40,4 +40,6 @@ jobs:
         run: pnpm run build
 
       - name: Publish Package to NPM
-        run: pnpx semantic-release
+        run: |
+          pnpm i -DE @semantic-release/changelog @semantic-release/git semantic-release
+          npx semantic-release
