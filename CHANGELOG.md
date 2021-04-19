@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.1...v2.1.2) (2021-04-19)
+
+
+### Bug Fixes
+
+* better config organization ([ae0f842](https://github.com/etienne-bechara/nestjs-redis/commit/ae0f8424611069e438cb468b30c558f2a6f35c6c))
+
 ## [2.1.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.0...v2.1.1) (2021-04-16)
 
 
