@@ -3,7 +3,7 @@ import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
 import { RedisInjectionToken } from './redis.enum';
-import { RedisModuleOptions, RedisSetOptions } from './redis.interface';
+import { RedisIncrementOptions, RedisLockOptions, RedisModuleOptions, RedisSetOptions } from './redis.interface';
 
 @Injectable()
 export class RedisService {
@@ -125,14 +125,17 @@ export class RedisService {
    * Increments a key and return its current counter.
    * If it does not exist create it with given ttl.
    * @param key
-   * @param ttl
+   * @param amount
+   * @param options
    */
-  public async incrementKey(key: string, ttl: number = this.defaultTtl): Promise<number> {
+  public async incrementKey(key: string, amount: number = 1, options: RedisIncrementOptions = { }): Promise<number> {
     this.loggerService.debug(`[RedisService] Incrementing key ${key}...`);
-    const counter = await this.getClient().incr(key);
+    options.ttl ??= this.defaultTtl;
+
+    const counter = await this.getClient().incrby(key, amount);
 
     if (counter === 1) {
-      await this.getClient().expire(key, ttl / 1000);
+      await this.getClient().expire(key, options.ttl / 1000);
     }
 
     return counter;
@@ -144,21 +147,25 @@ export class RedisService {
    * Uses a pseudo key ended with _LOCK to ensure
    * original value is not modified.
    * @param key
-   * @param ttl
+   * @param options
    */
-  public async lockKey(key: string, ttl: number = this.defaultTtl): Promise<void> {
+  public async lockKey(key: string, options: RedisLockOptions = { }): Promise<void> {
     this.loggerService.debug(`[RedisService] Locking key ${key}...`);
+    options.ttl ??= this.defaultTtl;
+    options.retryDelay ??= 500;
 
     const lockKey = `${key}_LOCK`;
     const lockValue = v4();
-    const lockHalt = 500;
 
-    const currentValue = await this.setGetKey(lockKey, lockValue, { ttl, skip: 'IF_EXIST' });
+    const currentValue = await this.setGetKey(lockKey, lockValue, {
+      ttl: options.ttl,
+      skip: 'IF_EXIST',
+    });
 
     if (currentValue !== lockValue) {
       this.loggerService.debug(`[RedisService] Locking key ${key} failed, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, lockHalt));
-      return this.lockKey(key, ttl);
+      await new Promise((resolve) => setTimeout(resolve, options.retryDelay));
+      return this.lockKey(key, { ttl: options.ttl });
     }
 
     this.loggerService.debug(`[RedisService] Key ${key} locked successfully!`);
@@ -170,6 +177,7 @@ export class RedisService {
    * @returns
    */
   public async unlockKey(key: string): Promise<void> {
+    this.loggerService.debug(`[RedisService] Unlocking key ${key}...`);
     return this.deleteKey(`${key}_LOCK`);
   }
 

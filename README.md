@@ -101,10 +101,10 @@ setGetKey<T>(params: RedisSetParams): Promise<T>;
 deleteKey(key: string): Promise<void>;
 
 // Increments a counter and returns current value
-incrementKey(key: string, ttl?: number): Promise<number>;
+incrementKey(key: string, amount: number, options: RedisIncrementOptions): Promise<number>;
 
 // Attempt to lock a key ensuring no other operation is using it
-lockKey(key: string, ttl?: number): Promise<void>;
+lockKey(key: string, options: RedisLockOptions): Promise<void>;
 
 // Removes the lock from previously locked key
 unlockKey(key: string): Promise<void>;

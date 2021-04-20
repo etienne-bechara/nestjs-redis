@@ -66,23 +66,24 @@ TestModule.createSandbox({
     });
 
     describe('incrementKey', () => {
-      it('should increment a key n times and read total value', async () => {
+      it('should increment a key X times by Y amount and read X * Y', async () => {
         const incrementKey = v4();
         const interactions = 100;
+        const incrementAmount = 5;
 
         for (let i = 0; i < interactions; i++) {
-          void redisService.incrementKey(incrementKey);
+          void redisService.incrementKey(incrementKey, incrementAmount);
         }
 
         const testValue = await redisService.getKey(incrementKey);
-        expect(testValue).toBe(interactions);
+        expect(testValue).toBe(interactions * incrementAmount);
       });
 
       it('should increment a key without resetting ttl', async () => {
         const incrementKey = v4();
 
         for (let i = 0; i < 10; i++) {
-          void redisService.incrementKey(incrementKey, 2000);
+          void redisService.incrementKey(incrementKey, 1, { ttl: 2000 });
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
@@ -90,6 +91,16 @@ TestModule.createSandbox({
 
         const testValue = await redisService.getKey(incrementKey);
         expect(testValue).toBeNull();
+      });
+
+      it('should decrement a key if input is negative', async () => {
+        const incrementKey = v4();
+
+        await redisService.incrementKey(incrementKey, 10);
+        await redisService.incrementKey(incrementKey, -3);
+
+        const testValue = await redisService.getKey(incrementKey);
+        expect(testValue).toBe(7);
       });
     });
 
@@ -103,7 +114,7 @@ TestModule.createSandbox({
 
         for (let i = 0; i < instances; i++) {
           lockPromises.push(
-            redisService.lockKey(lockKey, ttl),
+            redisService.lockKey(lockKey, { ttl }),
           );
         }
 
