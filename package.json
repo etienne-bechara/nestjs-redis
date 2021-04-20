@@ -1,6 +1,6 @@
 {
   "name": "@bechara/nestjs-redis",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "NestJS module wrapper around Redis IO",
   "author": {
     "name": "Etienne Bechara",

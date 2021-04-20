@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.0...v2.2.1) (2021-04-20)
+
+
+### Bug Fixes
+
+* allow to increase/decrease by custom amount ([c33e1e1](https://github.com/etienne-bechara/nestjs-redis/commit/c33e1e119ac0759317066c361494fd62d181ada2))
+
 # [2.2.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.3...v2.2.0) (2021-04-20)
 
 
