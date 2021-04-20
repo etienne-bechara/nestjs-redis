@@ -67,20 +67,47 @@ If you wish to change how environment variables are injected you may provide you
 
 ## Usage
 
-Import `RedisModule` into the domain you with to use it followed by injecting the `RedisService` at your desired provider and you shall be able to use one of the built-in methods:
+Import `RedisModule` into the domain you wish to use it, followed by injecting the `RedisService` at your desired provider.
 
+**Example**
+
+```ts
+@Injectable()
+export class UserService {}
+
+  public constructor(
+    private readonly redisService: RedisService,
+  ) { }
+
+}
 ```
+
+The following methods will be available at `this.redisService`:
+
+```ts
+// Returns the underlying client for native operations
+getClient(): Redis.Redis
+
+// Gets a key serializing the output
 getKey<T>(key: string): Promise<T>;
+
+// Sets a key serializing the input and allowing custom options
 setKey(params: RedisSetParams): Promise<void>;
-delKey(key: string): Promise<void>;
+
+// Sets a key and read its updated value
 setGetKey<T>(params: RedisSetParams): Promise<T>;
+
+// Deletes a key
+deleteKey(key: string): Promise<void>;
+
+// Increments a counter and returns current value
+incrementKey(key: string, ttl?: number): Promise<number>;
+
+// Attempt to lock a key ensuring no other operation is using it
 lockKey(key: string, ttl?: number): Promise<void>;
-```
 
-For complex operation you may acquire the underlying client directly:
-
-```
-getClient(): Redis.Redis;
+// Removes the lock from previously locked key
+unlockKey(key: string): Promise<void>;
 ```
 
 ## Full Example

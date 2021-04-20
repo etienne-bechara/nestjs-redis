@@ -57,10 +57,38 @@ TestModule.createSandbox({
       });
     });
 
-    describe('delKey', () => {
+    describe('deleteKey', () => {
       it('should delete persisted random number', async () => {
-        await redisService.delKey(testKey);
+        await redisService.deleteKey(testKey);
         const testValue = await redisService.getKey(testKey);
+        expect(testValue).toBeNull();
+      });
+    });
+
+    describe('incrementKey', () => {
+      it('should increment a key n times and read total value', async () => {
+        const incrementKey = v4();
+        const interactions = 100;
+
+        for (let i = 0; i < interactions; i++) {
+          void redisService.incrementKey(incrementKey);
+        }
+
+        const testValue = await redisService.getKey(incrementKey);
+        expect(testValue).toBe(interactions);
+      });
+
+      it('should increment a key without resetting ttl', async () => {
+        const incrementKey = v4();
+
+        for (let i = 0; i < 10; i++) {
+          void redisService.incrementKey(incrementKey, 2000);
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1100));
+
+        const testValue = await redisService.getKey(incrementKey);
         expect(testValue).toBeNull();
       });
     });

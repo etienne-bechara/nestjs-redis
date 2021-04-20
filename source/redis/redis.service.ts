@@ -56,7 +56,7 @@ export class RedisService {
    * Returns the underlying client.
    */
   public getClient(): Redis.Redis {
-    if (!this.initialized) {
+    if (!this.isInitialized()) {
       throw new InternalServerErrorException('[RedisService] Redis client unavailable');
     }
 
@@ -104,7 +104,8 @@ export class RedisService {
    * Deletes desired key.
    * @param key
    */
-  public async delKey(key: string): Promise<void> {
+  public async deleteKey(key: string): Promise<void> {
+    this.loggerService.debug(`[RedisService] Deleting key ${key}...`);
     await this.getClient().del(key);
   }
 
@@ -118,6 +119,23 @@ export class RedisService {
   public async setGetKey<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
     await this.setKey(key, value, options);
     return this.getKey(key);
+  }
+
+  /**
+   * Increments a key and return its current counter.
+   * If it does not exist create it with given ttl.
+   * @param key
+   * @param ttl
+   */
+  public async incrementKey(key: string, ttl: number = this.defaultTtl): Promise<number> {
+    this.loggerService.debug(`[RedisService] Incrementing key ${key}...`);
+    const counter = await this.getClient().incr(key);
+
+    if (counter === 1) {
+      await this.getClient().expire(key, ttl / 1000);
+    }
+
+    return counter;
   }
 
   /**
@@ -152,7 +170,7 @@ export class RedisService {
    * @returns
    */
   public async unlockKey(key: string): Promise<void> {
-    return this.delKey(`${key}_LOCK`);
+    return this.deleteKey(`${key}_LOCK`);
   }
 
 }
