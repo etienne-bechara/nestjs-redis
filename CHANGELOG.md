@@ -1,3 +1,11 @@
+## [2.1.3](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.2...v2.1.3) (2021-04-20)
+
+
+### Bug Fixes
+
+* ci publish ([30bee67](https://github.com/etienne-bechara/nestjs-redis/commit/30bee675f2097564e52f6ec25595cffe903b26fe))
+* ci publish ([8a4296d](https://github.com/etienne-bechara/nestjs-redis/commit/8a4296d5f9e36cfd861d8efa47f40321093ce08f))
+
 ## [2.1.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.1...v2.1.2) (2021-04-19)
 
 
