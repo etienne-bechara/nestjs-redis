@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.3...v2.2.0) (2021-04-20)
+
+
+### Features
+
+* add increment key with ttl ([7aa7940](https://github.com/etienne-bechara/nestjs-redis/commit/7aa7940515763d65561472c0fb625f6bffa7e1a6))
+
 ## [2.1.3](https://github.com/etienne-bechara/nestjs-redis/compare/v2.1.2...v2.1.3) (2021-04-20)
 
 
