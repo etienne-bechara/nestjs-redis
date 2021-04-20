@@ -103,7 +103,7 @@ deleteKey(key: string): Promise<void>;
 // Increments a counter and returns current value
 incrementKey(key: string, amount: number, options: RedisIncrementOptions): Promise<number>;
 
-// Attempt to lock a key ensuring no other operation is using it
+// Attempt to lock a key ensuring no other concurrent operation is using it
 lockKey(key: string, options: RedisLockOptions): Promise<void>;
 
 // Removes the lock from previously locked key
