@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.1...v2.2.2) (2021-04-28)
+
+
+### Bug Fixes
+
+* add retry options to lockKey ([7cde70e](https://github.com/etienne-bechara/nestjs-redis/commit/7cde70e95f78c57a1293f28b0492033e49de0bc5))
+
 ## [2.2.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.0...v2.2.1) (2021-04-20)
 
 
