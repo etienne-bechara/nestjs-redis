@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, LoggerService } from '@bechara/nestjs-core';
+import { Inject, Injectable, InternalServerErrorException, LoggerService, UtilService } from '@bechara/nestjs-core';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
@@ -16,6 +16,7 @@ export class RedisService {
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
     private readonly redisModuleOptions: RedisModuleOptions,
     private readonly loggerService: LoggerService,
+    private readonly utilService: UtilService,
   ) {
     this.redisModuleOptions ??= { };
 
@@ -152,21 +153,29 @@ export class RedisService {
   public async lockKey(key: string, options: RedisLockOptions = { }): Promise<void> {
     this.loggerService.debug(`[RedisService] Locking key ${key}...`);
     options.ttl ??= this.defaultTtl;
-    options.retryDelay ??= 500;
 
     const lockKey = `${key}_LOCK`;
     const lockValue = v4();
 
-    const currentValue = await this.setGetKey(lockKey, lockValue, {
-      ttl: options.ttl,
-      skip: 'IF_EXIST',
-    });
+    await this.utilService.retryOnException({
+      name: 'lockKey()',
+      delay: options.delay,
+      retries: options.retries,
+      timeout: options.timeout,
+      method: async () => {
+        const currentValue = await this.setGetKey(lockKey, lockValue, {
+          ttl: options.ttl,
+          skip: 'IF_EXIST',
+        });
 
-    if (currentValue !== lockValue) {
-      this.loggerService.debug(`[RedisService] Locking key ${key} failed, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, options.retryDelay));
-      return this.lockKey(key, { ttl: options.ttl });
-    }
+        if (currentValue !== lockValue) {
+          throw new InternalServerErrorException({
+            message: `[RedisService] Failed to lock key ${key}`,
+            options,
+          });
+        }
+      },
+    });
 
     this.loggerService.debug(`[RedisService] Key ${key} locked successfully!`);
   }

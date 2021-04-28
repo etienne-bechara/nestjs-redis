@@ -129,12 +129,33 @@ TestModule.createSandbox({
         const start = Date.now();
         const ttl = 5000;
 
-        await redisService.lockKey(lockKey);
+        await redisService.lockKey(lockKey, { ttl });
         await redisService.unlockKey(lockKey);
-        await redisService.lockKey(lockKey);
+        await redisService.lockKey(lockKey, { ttl });
 
         const elapsed = Date.now() - start;
         expect(elapsed).toBeLessThan(ttl);
+      });
+
+      it('should try once and throw if retries are zero', async () => {
+        const lockKey = v4();
+        const ttl = 1000;
+        let exception: boolean;
+
+        await redisService.lockKey(lockKey, { ttl });
+
+        try {
+          await redisService.lockKey(lockKey, {
+            retries: 0,
+            delay: ttl * 2,
+            ttl,
+          });
+        }
+        catch {
+          exception = true;
+        }
+
+        expect(exception).toBeTruthy();
       });
     });
   },

@@ -1,4 +1,4 @@
-import { DynamicModule, LoggerModule, Module } from '@bechara/nestjs-core';
+import { DynamicModule, LoggerModule, Module, UtilModule } from '@bechara/nestjs-core';
 
 import { RedisConfig } from './redis.config';
 import { RedisInjectionToken } from './redis.enum';
@@ -8,6 +8,7 @@ import { RedisService } from './redis.service';
 @Module({
   imports: [
     LoggerModule,
+    UtilModule,
   ],
   providers: [
     RedisConfig,

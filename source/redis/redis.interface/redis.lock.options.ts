@@ -1,4 +1,6 @@
 export interface RedisLockOptions {
   ttl?: number;
-  retryDelay?: number;
+  retries?: number;
+  timeout?: number;
+  delay?: number;
 }
