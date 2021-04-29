@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.2...v2.3.0) (2021-04-29)
+
+
+### Features
+
+* support float increment ([86f4f16](https://github.com/etienne-bechara/nestjs-redis/commit/86f4f16b0c519d509b2ad038e065c4c13fa0e42e))
+
 ## [2.2.2](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.1...v2.2.2) (2021-04-28)
 
 
