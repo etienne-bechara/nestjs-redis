@@ -66,10 +66,23 @@ TestModule.createSandbox({
     });
 
     describe('incrementKey', () => {
-      it('should increment a key X times by Y amount and read X * Y', async () => {
+      it('should increment a key by integer amount', async () => {
         const incrementKey = v4();
-        const interactions = 100;
-        const incrementAmount = 5;
+        const interactions = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
+        const incrementAmount = 1;
+
+        for (let i = 0; i < interactions; i++) {
+          void redisService.incrementKey(incrementKey, incrementAmount);
+        }
+
+        const testValue = await redisService.getKey(incrementKey);
+        expect(testValue).toBe(interactions * incrementAmount);
+      });
+
+      it('should increment a key by float amount', async () => {
+        const incrementKey = v4();
+        const interactions = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
+        const incrementAmount = Math.random();
 
         for (let i = 0; i < interactions; i++) {
           void redisService.incrementKey(incrementKey, incrementAmount);

@@ -100,7 +100,7 @@ setGetKey<T>(params: RedisSetParams): Promise<T>;
 // Deletes a key
 deleteKey(key: string): Promise<void>;
 
-// Increments a counter and returns current value
+// Increments a key by any float amount and returns current value
 incrementKey(key: string, amount: number, options: RedisIncrementOptions): Promise<number>;
 
 // Attempt to lock a key ensuring no other concurrent operation is using it

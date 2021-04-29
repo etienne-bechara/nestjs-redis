@@ -123,7 +123,7 @@ export class RedisService {
   }
 
   /**
-   * Increments a key and return its current counter.
+   * Increments a key and return its current value.
    * If it does not exist create it with given ttl.
    * @param key
    * @param amount
@@ -133,13 +133,15 @@ export class RedisService {
     this.loggerService.debug(`[RedisService] Incrementing key ${key}...`);
     options.ttl ??= this.defaultTtl;
 
-    const counter = await this.getClient().incrby(key, amount);
+    // Assert incrbyfloat() type because it is incorrectly set as number while returning string
+    const stringValue: string = await this.getClient().incrbyfloat(key, amount) as any;
+    const numberValue = Number.parseFloat(stringValue);
 
-    if (counter === 1) {
+    if (numberValue === amount) {
       await this.getClient().expire(key, options.ttl / 1000);
     }
 
-    return counter;
+    return numberValue;
   }
 
   /**
