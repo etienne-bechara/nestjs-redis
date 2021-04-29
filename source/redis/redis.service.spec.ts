@@ -81,15 +81,16 @@ TestModule.createSandbox({
 
       it('should increment a key by float amount', async () => {
         const incrementKey = v4();
+        const scale = 12;
         const interactions = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
-        const incrementAmount = Math.random();
+        const incrementAmount = Number.parseFloat(Math.random().toFixed(scale));
 
         for (let i = 0; i < interactions; i++) {
           void redisService.incrementKey(incrementKey, incrementAmount);
         }
 
-        const testValue = await redisService.getKey(incrementKey);
-        expect(testValue).toBe(interactions * incrementAmount);
+        const testValue: number = await redisService.getKey(incrementKey);
+        expect(testValue.toFixed(scale)).toBe((interactions * incrementAmount).toFixed(scale));
       });
 
       it('should increment a key without resetting ttl', async () => {
