@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Inject, Injectable, InternalServerErrorException, LoggerService, UtilService } from '@bechara/nestjs-core';
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
@@ -29,21 +30,34 @@ export class RedisService {
   }
 
   /**
-   * Sets up the redis cloud client, if reconnect procedure
-   * is not provided use the default below.
+   * Sets up the redis cloud client, use lazy connection
+   * in order to allow capturing failures.
    */
   private setupRedis(): void {
-    if (!this.redisModuleOptions.reconnectOnError) {
-      this.redisModuleOptions.reconnectOnError = (err: Error): boolean | 1 | 2 => {
-        this.loggerService.error(`[RedisService] ${err.message}`, err);
-        return 2;
-      };
-    }
+    this.loggerService.debug('[RedisService] Client connection started...');
+    this.redisModuleOptions.lazyConnect = true;
 
-    const redisHost = this.redisModuleOptions.host;
+    // On connection failure: attempt to reconnect after delay
+    this.redisModuleOptions.retryStrategy = (times: number): number | void => {
+      const retryDelay = Math.min(times * 100, 60_000);
+      this.loggerService.error('[RedisService] Connection failed', { retryDelay });
+      return retryDelay;
+    };
+
+    // On error: logs error message and resend failed command
+    this.redisModuleOptions.reconnectOnError = (err: Error): boolean | 1 | 2 => {
+      this.loggerService.error(`[RedisService] ${err.message}`, err);
+      return 2;
+    };
+
     this.redisClient = new Redis(this.redisModuleOptions);
+
+    this.redisClient.on('connect', () => {
+      this.loggerService.notice(`[RedisService] Client connected at ${this.redisModuleOptions.host}`);
+    });
+
     this.initialized = true;
-    this.loggerService.notice(`[RedisService] Client connected at ${redisHost}`);
+    void this.redisClient.connect();
   }
 
   /**
@@ -58,7 +72,7 @@ export class RedisService {
    */
   public getClient(): Redis.Redis {
     if (!this.isInitialized()) {
-      throw new InternalServerErrorException('[RedisService] Redis client unavailable');
+      throw new InternalServerErrorException('[RedisService] Client unavailable');
     }
 
     return this.redisClient;
@@ -76,8 +90,7 @@ export class RedisService {
   }
 
   /**
-   * When setting a key always stringify it to preserve
-   * type information.
+   * Set a key stringifying it to preserve type information.
    * @param key
    * @param value
    * @param options
@@ -145,10 +158,8 @@ export class RedisService {
   }
 
   /**
-   * Attempt to acquire the lock of a key which might
-   * be being used by other concurrent processes.
-   * Uses a pseudo key ended with _LOCK to ensure
-   * original value is not modified.
+   * Attempt to acquire the lock of a key which might be in use by other concurrent processes.
+   * Uses a pseudo key ended with _LOCK to ensure original value is not modified.
    * @param key
    * @param options
    */
