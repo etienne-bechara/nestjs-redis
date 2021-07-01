@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/etienne-bechara/nestjs-redis/compare/v2.3.0...v2.3.1) (2021-07-01)
+
+
+### Bug Fixes
+
+* improve error and reconnection logging ([76d775c](https://github.com/etienne-bechara/nestjs-redis/commit/76d775c17789aba0533593b8f8336973fb1cf927))
+
 # [2.3.0](https://github.com/etienne-bechara/nestjs-redis/compare/v2.2.2...v2.3.0) (2021-04-29)
 
 
